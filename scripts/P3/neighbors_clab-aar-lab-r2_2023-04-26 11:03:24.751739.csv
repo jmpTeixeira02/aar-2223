@@ -1,6 +1,0 @@
-interface,neighbour_host,neighbour_interface
-Et1,r1,Ethernet1
-Et3,r3,ethernet-1/2
-Et4,r4,ether3
-Ma0,r3,mgmt0
-Ma0,r1,Management0
