@@ -1,0 +1,5 @@
+interface,neighbour_host,neighbour_interface
+ether3,r4,ether4
+ether3,r2,lldp
+ether4,r4,ether3
+ether4,r1,lldp

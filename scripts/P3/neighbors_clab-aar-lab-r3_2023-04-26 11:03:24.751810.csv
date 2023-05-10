@@ -1,0 +1,5 @@
+interface,neighbour_host,neighbour_interface
+ethernet-1/1,r1,Ethernet3
+ethernet-1/2,r2,Ethernet3
+mgmt0,r1,Management0
+mgmt0,r2,Management0
