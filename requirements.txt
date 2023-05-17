@@ -1,0 +1,14 @@
+napalm
+ansible
+pytest
+setuptools
+setuptools-rust
+textfsm
+paramiko
+lxml
+ncclient==0.6.9
+xmltodict
+dictdiffer
+grpcio
+protobuf==3.20.*
+librouteros
