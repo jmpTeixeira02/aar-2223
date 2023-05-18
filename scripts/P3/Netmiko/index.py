@@ -5,6 +5,8 @@ import re
 
 devices = []
 
+distFolder = "./dist"
+
 def parseNeighbors(os, output):
     result = []
     if os == "arista_eos":
@@ -63,6 +65,8 @@ with open('config.csv', newline='') as csvfile:
     for row in reader:
         device = dict(zip(columns, row))
         devices.append(device)
+
+
 
 
 command_version = {"arista_eos" : "show ver", "nokia_srl": "show version", "mikrotik_routeros": "system/resource/print"}
@@ -145,10 +149,10 @@ def writeNeighbors(os, writer, input):
             arr.append(innerArr)
     writer.writerows(arr)
 
-
+distFolder = "./dist"
 
 # WRITE VERSION  
-writeName = f"version_{datetime.datetime.now()}.csv"
+writeName = f"{distFolder}/version_{datetime.datetime.now()}.csv"
 with open(writeName, "w", newline = '') as csvfile:
     writer = csv.writer(csvfile)
     writer.writerow(['host', 'type', 'version'])
@@ -157,7 +161,7 @@ with open(writeName, "w", newline = '') as csvfile:
 
 # WRITE NEIGHBORS
 for host, value in neighbors.items():
-    writeName = f"neighbors_{host}_{datetime.datetime.now()}.csv"
+    writeName = f"{distFolder}/neighbors_{host}_{datetime.datetime.now()}.csv"
     with open(writeName, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["interface", "neighbour_host", "neighbour_interface"])
@@ -165,7 +169,7 @@ for host, value in neighbors.items():
 
 # WRITE IP
 for host, value in ips.items():
-    writeName = f"interfaces_{host}_{datetime.datetime.now()}.csv"
+    writeName = f"{distFolder}/interfaces_{host}_{datetime.datetime.now()}.csv"
     with open(writeName, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["interface", "status", "ip", "mask"])
@@ -173,6 +177,6 @@ for host, value in ips.items():
 
 # WRITE CONF
 for host, value in confs.items():
-    writeName = f"conf_{host}_{datetime.datetime.now()}.txt"
+    writeName = f"{distFolder}/conf_{host}_{datetime.datetime.now()}.txt"
     with open(writeName, "w") as file:
         file.write(value)

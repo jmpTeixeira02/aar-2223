@@ -1,0 +1,13 @@
+---
+  - name: 1 - Get interfaces and print them
+    hosts: arista
+    connection: ansible.netcommon.network_cli
+    gather_facts: false
+    tasks:
+      - name: get interfaces
+        ansible.netcommon.cli_command:
+          command: show ip int br
+        register: result
+      - name: Display result to terminal window
+        debug:
+          var: result
