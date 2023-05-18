@@ -11,3 +11,29 @@
       - name: Display result to terminal window
         debug:
           var: result
+
+  - name: 1 - Get interfaces and print them
+    hosts: mikrotik
+    connection: ansible.netcommon.network_cli
+    gather_facts: false
+    tasks:
+      - name: get interfaces
+        ansible.netcommon.cli_command:
+          command: ip/adress print
+        register: result
+      - name: Display result to terminal window
+        debug:
+          var: result
+          
+  - name: 1 - Get interfaces and print them
+    hosts: srlinux
+    connection: ansible.netcommon.network_cli
+    gather_facts: false
+    tasks:
+      - name: get interfaces
+        ansible.netcommon.cli_command:
+          command: show interface all
+        register: result
+      - name: Display result to terminal window
+        debug:
+          var: result
