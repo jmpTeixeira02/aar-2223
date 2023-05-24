@@ -13,10 +13,10 @@ class NetworkInterfaceAreaX(object):
 
 routers = []
 
-routers.append({"template": "arista", "hostname": "clab-aar-lab-r1", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
-routers.append({"template": "arista", "hostname": "clab-aar-lab-r2", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
-routers.append({"template": "arista", "hostname": "clab-aar-lab-r3", "os": "srl", "user": "admin","pw": "NokiaSrl1!", "ethName": "ethernet1/"})
-routers.append({"template": "arista", "hostname": "clab-aar-lab-r4", "os": "ros", "user": "admin","pw": "admin", "ethName": "ether"})
+# routers.append({"template": "arista", "hostname": "clab-aar-lab-r1", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
+# routers.append({"template": "arista", "hostname": "clab-aar-lab-r2", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
+routers.append({"template": "srlinux", "hostname": "clab-aar-lab-r3", "os": "srl", "user": "admin","pw": "NokiaSrl1!", "ethName": "ethernet-1/"})
+# routers.append({"template": "arista", "hostname": "clab-aar-lab-r4", "os": "ros", "user": "admin","pw": "admin", "ethName": "ether"})
 
 for router in routers:
     print(router)
@@ -34,15 +34,17 @@ for router in routers:
         "transport": "http"
     }
 
-    device = driver(router['hostname'], router['user'], router['pw'], 60, optional_args)
+    device = driver(router['hostname'], router['user'], router['pw'], 120, optional_args)
 
     device.open()
 
     interface = NetworkInterfaceAreaX(router['ethName'], int(number[-1]), "Server Port")
     output = template.render(interface = interface)
+    print(output)
+    print("Device Loading Config")
+
     device.load_merge_candidate(config=output)
     
-
     print(device.get_config())
 
 
