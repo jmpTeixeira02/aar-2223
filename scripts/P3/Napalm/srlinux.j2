@@ -1,25 +1,26 @@
-enter candidate
 network-instance default
 set protocols ospf instance 1 admin-state enable
 set protocols ospf instance 1 area 0.0.0.0
 set protocols ospf instance 1 area {{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }}
 set protocols ospf instance 1 router-id {{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }}
-
+/
 {% for n in range (4)%}
     interface {{ interface.name }}{{ n+1 }}
     admin-state enable
-    mtu 1500
     {% if n+1 == interface.number %}
         subinterface 1 ipv4 address 192.168.{{ interface.number }}.254/24
+        /
         network-instance default
         set protocols ospf instance 1 area {{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }} interface {{ interface.name }}{{ n+1 }}.1
     {% else %}
         {% if interface.number < n+1 %}
             subinterface 1 ipv4 address 172.16.{{ interface.number }}{{ n+1 }}.{{ interface.number }}/24
+            /
             network-instance default
             set protocols ospf instance 1 area {{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }} interface {{ interface.name }}{{ n+1 }}.1
         {% else %}
             subinterface 1 ipv4 address 172.16.{{ n+1 }}{{ interface.number }}.{{ interface.number }}/24
+            /
             network-instance default
             set protocols ospf instance 1 area {{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }} interface {{ interface.name }}{{ n+1 }}.1
         {% endif %}
