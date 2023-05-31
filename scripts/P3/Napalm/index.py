@@ -41,9 +41,10 @@ for router in routers:
     interface = NetworkInterfaceAreaX(router['ethName'], int(number[-1]), "Server Port")
     output = template.render(interface = interface)
     print(output)
-    print("Device Loading Config")
+    # device.discard_config()
 
     device.load_merge_candidate(config=output)
+    # device.load_replace_candidate(config=output)
     
     print(device.get_config())
 
