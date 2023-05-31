@@ -7,6 +7,13 @@
       - name: Deploy config
         ansible.netcommon.cli_config:
           config: "{{ lookup('template', './configs/{{ ansible_network_os }}.j2') }}"
+      - name: get interfaces
+        ansible.netcommon.cli_command:
+          command: "{{show_ip_int}}"
+        register: result
+      - name: Display result to terminal window
+        debug:
+          var: result
   - name: 2 - Config SrLinux
     hosts: srlinux
     connection: local
@@ -21,3 +28,4 @@
           cmd: gnmic set -a {{ inventory_hostname }} -u {{ ansible_user }}
             -p {{ ansible_password }} -e json_ietf --skip-verify
             --update-path / --update-file ./configs/{{ inventory_hostname }}.json
+      

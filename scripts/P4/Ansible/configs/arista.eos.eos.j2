@@ -1,3 +1,4 @@
+switchport default mode routed
 {% for n in range (4)%}
     interface {{ interface.name }}{{ n+1 }}
     description {{ interface.description }}    
