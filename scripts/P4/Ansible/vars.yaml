@@ -1,0 +1,9 @@
+---
+- name: 1 - Show vars
+  hosts: arista
+  connection: ansible.netcommon.network_cli
+  gather_facts: false
+  tasks:
+    - name: print all variables
+      debug:
+        var=vars

@@ -1,0 +1,23 @@
+---
+  - name: 1 - Config All
+    hosts: arista,mikrotik
+    connection: ansible.netcommon.network_cli
+    gather_facts: false
+    tasks:
+      - name: Deploy config
+        ansible.netcommon.cli_config:
+          config: "{{ lookup('template', './configs/{{ ansible_network_os }}.j2') }}"
+  - name: 2 - Config SrLinux
+    hosts: srlinux
+    connection: local
+    gather_facts: false
+    tasks:
+      - name: Generate SrLinux Config
+        template:
+          src: "./configs/{{ ansible_network_os }}.j2"
+          dest: "./configs/{{ inventory_hostname }}.json"
+      - name: Deploy Config to SrLinux
+        command:
+          cmd: gnmic set -a {{ inventory_hostname }} -u {{ ansible_user }}
+            -p {{ ansible_password }} -e json_ietf --skip-verify
+            --update-path / --update-file ./configs/{{ inventory_hostname }}.json

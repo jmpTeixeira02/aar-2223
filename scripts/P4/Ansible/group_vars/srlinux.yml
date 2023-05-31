@@ -1,0 +1,3 @@
+interface:
+  name: "ethernet-1/"
+  description: "Server Port"

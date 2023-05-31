@@ -1,0 +1,48 @@
+{
+    "network-instance default" : {
+        "admin-state": "enable",
+        "protocols": {
+            "ospf": {
+                "instance default": {
+                    "area 0.0.0.0": {
+                        {% for n in range (4) %}
+                            {% if n+1 != number %}
+                                "interface {{ interface.name }}{{ n+1 }}.1" : {} {% if n+1 != 4 %}, {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                    },
+                    "area {{ number }}.{{ number }}.{{ number }}.{{ number }}": {
+                        {% for n in range (4) %}
+                            {% if n+1 == number %}
+                                "interface {{ interface.name }}{{ n+1 }}.1" : {}
+                            {% endif %}
+                        {% endfor %}
+                    }
+                }
+            }
+        }
+    },
+
+    {% for n in range (4) %}
+    "interface {{ interface.name }}{{ n+1 }}": {
+        "admin-state": "enable",
+        "subinterface 1": {
+            "ipv4": {
+                {% if n+1 == number %}
+                "address": "192.168.{{ number }}.254/24"
+                {% else %}
+                "address": "172.16.{{ n+1 }}{{ number }}.{{ number }}/24"
+                {% endif %}
+            }
+        }
+    },
+    {% endfor %}
+    "interface lo0":{
+        "loopback-mode": "true",
+        "subinterface 1": {
+            "ipv4": {
+                "address": "172.16.0.{{ number }}/32"
+            }
+        }
+    }
+}
