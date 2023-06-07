@@ -1,0 +1,7 @@
+                        /ip/address/add address=172.16.14.4/24 interface=ether1
+                                    /ip/address/add address=172.16.24.4/24 interface=ether2
+                                    /ip/address/add address=172.16.34.4/24 interface=ether3
+                        /ip/address/add address=192.168.4.254/24 interface=ether4
+    
+/interface/bridge/add name=loopback0
+/ip/address/add address=172.16.0.4/32 interface=loopback0
