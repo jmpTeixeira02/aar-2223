@@ -1,7 +1,3 @@
-/routing/ospf/instance/add name=default
-/routing/ospf/area/add name=backbone area-id=0.0.0.0 instance=default
-/routing/ospf/area/add name={{number}} area-id={{ number }}.{{ number }}.{{ number }}.{{ number }} instance=default
-/routing/ospf/interface-template/add networks=192.168.{{ number }}.0/24 area={{number}}
 {% for n in range (4)%}
     {% if n+1 == number %}
         /ip/address/add address=192.168.{{ number }}.254/24 interface={{ interface.name }}{{ n+1+1 }}
@@ -13,7 +9,3 @@
         {% endif %}
     {% endif %}
 {% endfor %}
-
-/interface/bridge/add name=loopback0
-/ip/address/add address=172.16.0.{{ number }}/32 interface=loopback0
-/routing/ospf/instance/set default router-id=172.16.0.{{ number }}

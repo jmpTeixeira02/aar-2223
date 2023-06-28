@@ -15,8 +15,8 @@ routers = []
 
 # routers.append({"template": "arista", "hostname": "clab-aar-lab-r1", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
 # routers.append({"template": "arista", "hostname": "clab-aar-lab-r2", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
-# routers.append({"template": "srlinux", "hostname": "clab-aar-lab-r3", "os": "srl", "user": "admin","pw": "NokiaSrl1!", "ethName": "ethernet-1/"})
-routers.append({"template": "mikrotik", "hostname": "clab-aar-lab-r4", "os": "ros", "user": "admin","pw": "admin", "ethName": "ether"})
+routers.append({"template": "srlinux", "hostname": "clab-aar-lab-r3", "os": "srl", "user": "admin","pw": "NokiaSrl1!", "ethName": "ethernet-1/"})
+# routers.append({"template": "mikrotik", "hostname": "clab-aar-lab-r4", "os": "ros", "user": "admin","pw": "admin", "ethName": "ether"})
 
 for router in routers:
     print(router)
@@ -26,26 +26,28 @@ for router in routers:
     number = router['hostname'].split("-")[-1]
     optional_args = {
         "gnmi_port": 57400,
-        "jsonrpc_port": 80,
+        "jsonrpc_port": 443,
         "target_name": f"{router['hostname']}",
-        "tls_ca": f"/home/server/vrnetlab/clab-aar-lab/{number}/config/tls/clab-profile.pem",
+        "tls_ca": "/home/server/vrnetlab/clab-aar-lab/.tls/ca/ca.pem",
         "skip_verify": True,
         "encoding": "JSON_IETF",
         "transport": "http"
     }
 
-    device = driver(router['hostname'], router['user'], router['pw'], 120, optional_args)
+    device = driver(router['hostname'], router['user'], router['pw'], 120, optional_args if router["template"] == "srlinux" else None)
 
     device.open()
 
     interface = NetworkInterfaceAreaX(router['ethName'], int(number[-1]), "Server Port")
     output = template.render(interface = interface)
     print(output)
-    # device.discard_config()
+    device.discard_config()
 
-    device.load_merge_candidate(config=output)
-    # device.load_replace_candidate(config=output)
-    
+    # device.load_merge_candidate(config=output)
+    device.load_replace_candidate(config=output)
+    diffs = device.compare_config()
+    if (diffs):
+        device.commit_config()
     print(device.get_config())
 
 

@@ -1,6 +1,7 @@
 from netmiko import ConnectHandler
 import datetime
 import csv
+import os as system
 import re
 
 devices = []
@@ -150,7 +151,8 @@ def writeNeighbors(os, writer, input):
     writer.writerows(arr)
 
 distFolder = "./dist"
-
+if not system.path.exists(distFolder):
+    system.makedirs(distFolder)
 # WRITE VERSION  
 writeName = f"{distFolder}/version_{datetime.datetime.now()}.csv"
 with open(writeName, "w", newline = '') as csvfile:

@@ -1,32 +1,51 @@
 {
-    "network-instance default" : {
+    "network-instance" : {
+        "name": "default",
         "admin-state": "enable",
         "protocols": {
             "ospf": {
-                "instance default": {
-                    "area 0.0.0.0": {
-                        {% for n in range (4) %}
-                            {% if n+1 != interface.number %}
-                                "interface {{ interface.name }}{{ n+1 }}.1" : {} {% if n+1 != 4 %}, {% endif %}
-                            {% endif %}
-                        {% endfor %}
-                    },
-                    "area {{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }}": {
-                        {% for n in range (4) %}
-                            {% if n+1 == interface.number %}
-                                "interface {{ interface.name }}{{ n+1 }}.1" : {}
-                            {% endif %}
-                        {% endfor %}
-                    }
+                "instance": {
+                    "name": "default",
+                    "version": "ospf-v2",
+                    "router-id": "{{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }}",
+                    "area": [
+                        {
+                            "area-id": "0.0.0.0",
+                            "interface": [
+                                {% for n in range (4) %}
+                                    {% if n+1 != interface.number %}
+                                    {
+                                        "interface-name": "{{ interface.name }}{{ n+1 }}.1",
+                                        "interface-type": "broadcast"
+                                    } {% if n+1 != 4 %}, {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            ]
+                        },
+                        {
+                            "area-id": "{{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }}",
+                            "interface":[
+                                {% for n in range (4) %}
+                                    {% if n+1 == interface.number %}
+                                    {
+                                        "interface-name": "{{ interface.name }}{{ n+1 }}.1",
+                                        "interface-type": "broadcast"
+                                    }
+                                    {% endif %}
+                                {% endfor %}
+                            ]
+                        }
+                    ]
                 }
             }
         }
     },
-
     {% for n in range (4) %}
-    "interface {{ interface.name }}{{ n+1 }}": {
+    "interface": {
+        "name": "{{ interface.name }}{{ n+1 }}",
         "admin-state": "enable",
-        "subinterface 1": {
+        "subinterface": [{
+            "index": "1",
             "ipv4": {
                 {% if n+1 == interface.number %}
                 "address": "192.168.{{ interface.number }}.254/24"
@@ -34,15 +53,21 @@
                 "address": "172.16.{{ n+1 }}{{ interface.number }}.{{ interface.number }}/24"
                 {% endif %}
             }
-        }
+        }]
     },
     {% endfor %}
-    "interface lo0":{
+    "interface":{
+        "name": "lo0",
         "loopback-mode": "true",
-        "subinterface 1": {
+        "subinterface": [{
+            "index": "1",
             "ipv4": {
-                "address": "172.16.0.{{ interface.number }}/32"
+                "address": [
+                    {
+                        "ip-prefix": "172.16.0.{{ interface.number }}/32"
+                    }
+                ]
             }
-        }
+        }]
     }
 }
