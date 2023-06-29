@@ -13,9 +13,9 @@ class NetworkInterfaceAreaX(object):
 
 routers = []
 
-# routers.append({"template": "arista", "hostname": "clab-aar-lab-r1", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
-# routers.append({"template": "arista", "hostname": "clab-aar-lab-r2", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
-routers.append({"template": "srlinux", "hostname": "clab-aar-lab-r3", "os": "srl", "user": "admin","pw": "NokiaSrl1!", "ethName": "ethernet-1/"})
+routers.append({"template": "arista", "hostname": "clab-aar-lab-r1", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
+routers.append({"template": "arista", "hostname": "clab-aar-lab-r2", "os": "eos", "user": "admin","pw": "admin", "ethName": "Ethernet"})
+# routers.append({"template": "srlinux", "hostname": "clab-aar-lab-r3", "os": "srl", "user": "admin","pw": "NokiaSrl1!", "ethName": "ethernet-1/"})
 # routers.append({"template": "mikrotik", "hostname": "clab-aar-lab-r4", "os": "ros", "user": "admin","pw": "admin", "ethName": "ether"})
 
 for router in routers:
@@ -31,38 +31,21 @@ for router in routers:
         "tls_ca": "/home/server/vrnetlab/clab-aar-lab/.tls/ca/ca.pem",
         "encoding": "JSON_IETF",
     }
+    optional_args2 = {
+        "transport": "http" 
+    }
 
-    device = driver(router['hostname'], router['user'], router['pw'], 120, optional_args if router["template"] == "srlinux" else None)
+    device = driver(router['hostname'], router['user'], router['pw'], 120, optional_args if router["template"] == "srlinux" else optional_args2)
 
     device.open()
 
     interface = NetworkInterfaceAreaX(router['ethName'], int(number[-1]), "Server Port")
     output = template.render(interface = interface)
-    # print(output)
-    device.discard_config()
-
+    
     device.load_merge_candidate(config=output)
     # device.load_replace_candidate(config=output)
     diffs = device.compare_config()
     if (diffs):
         # print(diffs)
         device.commit_config()
-    print("DONE")
-
-# driver = get_network_driver("srl")
-
-# optional_args = {
-#     "gnmi_port": 57400,
-#     "jsonrpc_port": 80,
-#     "target_name": f"clab-aar-lab-r3",
-#     "tls_ca": f"/home/server/vrnetlab/clab-aar-lab/r3/config/tls/clab-profile.pem",
-#     "skip_verify": True,
-#     "encoding": "JSON_IETF"
-#     }
-
-# device = driver("clab-aar-lab-r3", "admin", "admin", 60, optional_args)
-
-# device.open()
-
-# print(device.get_config())
-
+    device.close()
