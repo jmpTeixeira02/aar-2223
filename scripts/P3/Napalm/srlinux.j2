@@ -54,12 +54,29 @@
                     "area": [
                         {
                             "area-id": "0.0.0.0",
+                            "area-range": [
+                                {% for n in range (4) %}
+                                    {% if n+1 != interface.number %}
+                                    {
+                                        {% if interface.number < n+1 %}
+                                            "ip-prefix-mask": "172.16.{{ interface.number }}{{ n+1 }}.0/24",
+                                        {% else %}
+                                            "ip-prefix-mask": "172.16.{{ n+1 }}{{ interface.number }}.0/24",
+                                        {% endif %}
+                                        "advertise": "true"
+                                    } {% if n+1 != 4 %}, {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            ],
+                            "advertise-router-capability": "true",
                             "interface": [
                                 {% for n in range (4) %}
                                     {% if n+1 != interface.number %}
                                     {
                                         "interface-name": "{{ interface.name }}{{ n+1 }}.1",
-                                        "interface-type": "broadcast"
+                                        "interface-type": "broadcast",
+                                        "advertise-router-capability": "true",
+                                        "advertise-subnet": "true"
                                     } {% if n+1 != 4 %}, {% endif %}
                                     {% endif %}
                                 {% endfor %}
@@ -67,12 +84,19 @@
                         },
                         {
                             "area-id": "{{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }}",
+                            "area-range": {
+                                "ip-prefix-mask": "192.168.{{ interface.number }}.0/24",
+                                "advertise": "true"
+                            },
+                            "advertise-router-capability": "true",
                             "interface":[
                                 {% for n in range (4) %}
                                     {% if n+1 == interface.number %}
                                     {
                                         "interface-name": "{{ interface.name }}{{ n+1 }}.1",
-                                        "interface-type": "broadcast"
+                                        "interface-type": "broadcast",
+                                        "advertise-router-capability": "true",
+                                        "advertise-subnet": "true"
                                     }
                                     {% endif %}
                                 {% endfor %}

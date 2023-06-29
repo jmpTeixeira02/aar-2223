@@ -1,5 +1,6 @@
 ip routing
 router ospf {{ interface.number }}
+no passive-interface default
 router-id {{ interface.number }}.{{ interface.number }}.{{ interface.number }}.{{ interface.number }}
 no passive-interface default
 area {{ interface.number }} range 192.168.{{ interface.number }}.0/24

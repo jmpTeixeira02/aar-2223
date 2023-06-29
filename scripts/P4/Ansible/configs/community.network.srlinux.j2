@@ -1,27 +1,110 @@
 {
-    {% for n in range (4) %}
-    "interface": {
-        "name": "{{ interface.name }}{{ n+1 }}",
+    "interface": [
+        {% for n in range (4) %}
+        {
+            "name": "{{ interface.name }}{{ n+1 }}",
+            "admin-state": "enable",
+            "subinterface": [{
+                "index": "1",
+                "ipv4": {
+                    "address": [
+                        {
+                            {% if n+1 == number %}
+                                "ip-prefix": "192.168.{{ number }}.254/24"
+                            {% else %}
+                                "ip-prefix": "172.16.{{ n+1 }}{{ number }}.{{ number }}/24"
+                            {% endif %}
+                        }
+                    ]
+                }
+            }]
+        },
+        {% endfor %}
+        {
+            "name": "lo0",
+            {# "loopback-mode": "true", #}
+            "subinterface": [{
+                "index": "1",
+                "ipv4": {
+                    "address": [
+                        {
+                            "ip-prefix": "172.16.0.{{ number }}/32"
+                        }
+                    ]
+                }
+            }]
+        }
+    ],
+    "network-instance" : {
+        "name": "default",
         "admin-state": "enable",
-        "subinterface": [{
-            "index": "1",
-            "ipv4": {
-                {% if n+1 == number %}
-                "address": "192.168.{{ number }}.254/24"
-                {% else %}
-                "address": "172.16.{{ n+1 }}{{ number }}.{{ number }}/24"
-                {% endif %}
+        "interface": [
+            {% for n in range (4) %}
+            {
+                "name": "{{ interface.name }}{{ n+1 }}.1"
+            }{% if n+1 != 4 %}, {% endif %}
+            {% endfor %}
+        ],
+        "protocols": {
+            "ospf": {
+                "instance": {
+                    "name": "default",
+                    "version": "ospf-v2",
+                    "router-id": "{{ number }}.{{ number }}.{{ number }}.{{ number }}",
+                    "area": [
+                        {
+                            "area-id": "0.0.0.0",
+                            "area-range": [
+                                {% for n in range (4) %}
+                                    {% if n+1 != number %}
+                                    {
+                                        {% if number < n+1 %}
+                                            "ip-prefix-mask": "172.16.{{ number }}{{ n+1 }}.0/24",
+                                        {% else %}
+                                            "ip-prefix-mask": "172.16.{{ n+1 }}{{ number }}.0/24",
+                                        {% endif %}
+                                        "advertise": "true"
+                                    } {% if n+1 != 4 %}, {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            ],
+                            "advertise-router-capability": "true",
+                            "interface": [
+                                {% for n in range (4) %}
+                                    {% if n+1 != number %}
+                                    {
+                                        "interface-name": "{{ interface.name }}{{ n+1 }}.1",
+                                        "interface-type": "broadcast",
+                                        "advertise-router-capability": "true",
+                                        "advertise-subnet": "true"
+                                    } {% if n+1 != 4 %}, {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            ]
+                        },
+                        {
+                            "area-id": "{{ number }}.{{ number }}.{{ number }}.{{ number }}",
+                            "area-range": {
+                                "ip-prefix-mask": "192.168.{{ number }}.0/24",
+                                "advertise": "true"
+                            },
+                            "advertise-router-capability": "true",
+                            "interface":[
+                                {% for n in range (4) %}
+                                    {% if n+1 == number %}
+                                    {
+                                        "interface-name": "{{ interface.name }}{{ n+1 }}.1",
+                                        "interface-type": "broadcast",
+                                        "advertise-router-capability": "true",
+                                        "advertise-subnet": "true"
+                                    }
+                                    {% endif %}
+                                {% endfor %}
+                            ]
+                        }
+                    ]
+                }
             }
-        }]
-    },
-    {% endfor %}
-    "interface lo0":{
-        "loopback-mode": "true",
-        "subinterface": [{
-            "index": "1",
-            "ipv4": {
-                "address": "172.16.0.{{ number }}/32"
-            }
-        }]
+        }
     }
 }

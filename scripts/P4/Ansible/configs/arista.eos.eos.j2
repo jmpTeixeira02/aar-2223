@@ -1,27 +1,32 @@
-switchport default mode routed
+ip routing
+router ospf {{ number }}
+no passive-interface default
+router-id {{ number }}.{{ number }}.{{ number }}.{{ number }}
+no passive-interface default
+area {{ number }} range 192.168.{{ number }}.0/24
+
 {% for n in range (4)%}
     interface {{ interface.name }}{{ n+1 }}
-    description {{ interface.description }}    
+    no switchport
+    no shutdown
     {% if n+1 == number %}
         ip address 192.168.{{ number }}.254/24
-        router ospf {{ number }}
-        network 192.168.1.0 0.0.0.255 area {{number}}
+        ip ospf area {{number}}
     {% else %}
         {% if number < n+1 %}
             ip address 172.16.{{ number }}{{ n+1 }}.{{ number }}/24
+            ip ospf area 0
             router ospf {{ number }}
-            network 172.16.{{ number }}{{ n+1 }}.0 0.0.0.255 area 0
+            area 0 range 172.16.{{ number }}{{ n+1 }}.0/24
         {% else %}
             ip address 172.16.{{ n+1 }}{{ number }}.{{ number }}/24
+            ip ospf area 0
             router ospf {{ number }}
-            network 172.16.{{ n+1 }}{{ number }}.0 0.0.0.255 area 0
+            area 0 range 172.16.{{ n+1 }}{{ number }}.0/24
         {% endif %}
     {% endif %}
-    no shutdown
-    no passive-interface default
     exit
 {% endfor %}
 
 interface lo0
-description lo_interface
 ip address 172.16.0.{{ number }}/32
