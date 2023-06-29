@@ -29,9 +29,7 @@ for router in routers:
         "jsonrpc_port": 443,
         "target_name": f"{router['hostname']}",
         "tls_ca": "/home/server/vrnetlab/clab-aar-lab/.tls/ca/ca.pem",
-        "skip_verify": True,
         "encoding": "JSON_IETF",
-        "transport": "http"
     }
 
     device = driver(router['hostname'], router['user'], router['pw'], 120, optional_args if router["template"] == "srlinux" else None)
@@ -40,16 +38,16 @@ for router in routers:
 
     interface = NetworkInterfaceAreaX(router['ethName'], int(number[-1]), "Server Port")
     output = template.render(interface = interface)
-    print(output)
+    # print(output)
     device.discard_config()
 
-    # device.load_merge_candidate(config=output)
-    device.load_replace_candidate(config=output)
+    device.load_merge_candidate(config=output)
+    # device.load_replace_candidate(config=output)
     diffs = device.compare_config()
     if (diffs):
+        # print(diffs)
         device.commit_config()
-    print(device.get_config())
-
+    print("DONE")
 
 # driver = get_network_driver("srl")
 
