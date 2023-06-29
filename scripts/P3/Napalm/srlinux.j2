@@ -1,7 +1,50 @@
 {
+    "interface": [
+        {% for n in range (4) %}
+        {
+            "name": "{{ interface.name }}{{ n+1 }}",
+            "admin-state": "enable",
+            "subinterface": [{
+                "index": "1",
+                "ipv4": {
+                    "address": [
+                        {
+                            {% if n+1 == interface.number %}
+                                "ip-prefix": "192.168.{{ interface.number }}.254/24"
+                            {% else %}
+                                "ip-prefix": "172.16.{{ n+1 }}{{ interface.number }}.{{ interface.number }}/24"
+                            {% endif %}
+                        }
+                    ]
+                }
+            }]
+        },
+        {% endfor %}
+        {
+            "name": "lo0",
+            {# "loopback-mode": "true", #}
+            "subinterface": [{
+                "index": "1",
+                "ipv4": {
+                    "address": [
+                        {
+                            "ip-prefix": "172.16.0.{{ interface.number }}/32"
+                        }
+                    ]
+                }
+            }]
+        }
+    ],
     "network-instance" : {
         "name": "default",
         "admin-state": "enable",
+        "interface": [
+            {% for n in range (4) %}
+            {
+                "name": "{{ interface.name }}{{ n+1 }}.1"
+            }{% if n+1 != 4 %}, {% endif %}
+            {% endfor %}
+        ],
         "protocols": {
             "ospf": {
                 "instance": {
@@ -39,40 +82,5 @@
                 }
             }
         }
-    },
-    
-    "interface": [
-        {% for n in range (4) %}
-        {
-            "name": "{{ interface.name }}{{ n+1 }}",
-            "admin-state": "enable",
-            "subinterface": [{
-                "index": "1",
-                "ipv4": {
-                    "address": [
-                        {% if n+1 == interface.number %}
-                            "ip-prefix": "192.168.{{ interface.number }}.254/24"
-                        {% else %}
-                            "ip-prefix": "172.16.{{ n+1 }}{{ interface.number }}.{{ interface.number }}/24"
-                        {% endif %}
-                    ]
-                }
-            }]
-        },
-        {% endfor %}
-        {
-            "name": "lo0",
-            "loopback-mode": "true",
-            "subinterface": [{
-                "index": "1",
-                "ipv4": {
-                    "address": [
-                        {
-                            "ip-prefix": "172.16.0.{{ interface.number }}/32"
-                        }
-                    ]
-                }
-            }]
-        }
-    ],
+    }
 }
