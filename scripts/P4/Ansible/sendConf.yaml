@@ -1,6 +1,6 @@
 ---
   - name: 1 - Config All
-    hosts: arista
+    hosts: arista, mikrotik
     connection: ansible.netcommon.network_cli
     gather_facts: false
     tasks:

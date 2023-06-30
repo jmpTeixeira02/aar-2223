@@ -1,5 +1,12 @@
-                        /ip/address/add address=172.16.14.4/24 interface=ether2
-                                    /ip/address/add address=172.16.24.4/24 interface=ether3
-                                    /ip/address/add address=172.16.34.4/24 interface=ether4
-                        /ip/address/add address=192.168.4.254/24 interface=ether5
+/routing/ospf/instance/add name=default
+/routing/ospf/area/add name=backbone area-id=0.0.0.0 instance=default
+/routing/ospf/area/add name=4 area-id=4.4.4.4 instance=default
+/routing/ospf/interface-template/add networks=192.168.4.0/24 area=4
+                        /ip/address/add address=172.16.14.4/24 interface=ether1
+                                    /ip/address/add address=172.16.24.4/24 interface=ether2
+                                    /ip/address/add address=172.16.34.4/24 interface=ether3
+                        /ip/address/add address=192.168.4.254/24 interface=ether4
     
+/interface/bridge/add name=loopback0
+/ip/address/add address=172.16.0.4/32 interface=loopback0
+/routing/ospf/instance/set default router-id=172.16.0.4
